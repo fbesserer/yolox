@@ -4,6 +4,7 @@ import time
 
 from absl import app, flags
 from tensorflow.keras import optimizers
+import numpy as np
 
 from core.utils import decode_cfg, load_weights
 from core.dataset import Dataset
@@ -52,11 +53,15 @@ def main(_argv):
     else:
         raise NotImplementedError()
 
-    epoch_steps = 4000
+    # epoch_steps = 4000 # batchsize und epochs sind angegeben, warum dann eine separate iterations variable?
 
     model, eval_model = Model(cfg)
     model.summary()
     train_dataset = Dataset(cfg)
+
+    batch_size = cfg['train']['batch_size']
+    epoch_steps = np.ceil(batch_size / train_dataset.num_anno)
+
 
     init_weight = cfg["train"]["init_weight_path"]
     anchors = cfg['yolo']['anchors']
@@ -105,14 +110,14 @@ def main(_argv):
 
     model.compile(loss=loss, optimizer=opt, run_eagerly=False)
     model.fit(train_dataset,
-              steps_per_epoch=epoch_steps,
+              # steps_per_epoch=epoch_steps,
               epochs=1,
               callbacks=warmup_callback
               )
 
     model.compile(loss=loss, optimizer=opt, run_eagerly=False)
     model.fit(train_dataset,
-              steps_per_epoch=epoch_steps,
+              # steps_per_epoch=epoch_steps,
               epochs=epochs // 5 * 2,
               callbacks=eval_callback + lr_callback
               )
@@ -123,7 +128,7 @@ def main(_argv):
     # reset sample rate
     model.compile(loss=loss, optimizer=opt, run_eagerly=False)
     model.fit(train_dataset,
-              steps_per_epoch=epoch_steps,
+              # steps_per_epoch=epoch_steps,
               epochs=epochs // 5 * 3,
               callbacks=eval_callback + lr_callback
               )

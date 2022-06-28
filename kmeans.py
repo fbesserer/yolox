@@ -7,7 +7,8 @@ from core.utils import decode_annotation
 # Parameters
 K = 6
 image_size = 416
-dataset_path = './data/pascal_voc/train.txt'
+# dataset_path = './data/nurKat2.txt'
+dataset_path = './data/nurKat2_6pics.txt'
 
 print('Num of Clusters is', K)
 print('Base Image Size is', image_size)
